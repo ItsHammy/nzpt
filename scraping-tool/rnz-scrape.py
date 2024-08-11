@@ -6,12 +6,16 @@ Finally, articles that mention a tracked politician are saved with a blurb to th
 """
 
 # Importing the necessary libraries
-import urllib2
+from urllib.request import urlopen
 import xmltodict
+
+
+# List of politicians to track
+politicians = ['Jacinda Ardern', 'Judith Collins', 'Winston Peters', 'James Shaw', 'David Seymour', 'Jamie Arbuckle', 'Erica Stanford']
 
 def get_articles():
     # Open the XML file from the RNZ website
-    response = urllib2.urlopen('https://www.rnz.co.nz/rss/political.xml')
+    response = urlopen('https://www.rnz.co.nz/rss/political.xml')
     xml = response.read()
     response.close()
 
@@ -21,19 +25,22 @@ def get_articles():
     # Get the list of articles
     articles = data['rss']['channel']['item']
 
-    # List of politicians to track
-    politicians = ['Jacinda Ardern', 'Judith Collins', 'Winston Peters', 'James Shaw', 'David Seymour']
-
     # Loop through the articles and check if any of the politicians are mentioned
     for article in articles:
         title = article['title']
         link = article['link']
         description = article['description']
+        pageCheck(link)
 
-        for politician in politicians:
-            if politician in title or politician in description:
-                print('Politician mentioned:', politician)
-                print('Title:', title)
-                print('Link:', link)
-                print('Description:', description)
-                print('---')
+def pageCheck(url):
+    content = urlopen(url).read()
+    for politician in politicians:
+        if politician in content:
+            print('Politician mentioned:', politician)
+            print('Title:', title)
+            print('Link:', link)
+            print('Description:', description)
+            print('---')
+
+
+get_articles()
