@@ -13,10 +13,11 @@ PRINTER = 0 # CHANGE TO 1 TO PRINT LOGS TO CONSOLE
 import urllib.request
 import xmltodict
 from datetime import datetime
+import os
 
 
 
-# List of politicians to track
+# List of politicians to track (TEST)
 politicians = ['Jacinda Ardern', 'Judith Collins', 'Winston Peters', 'James Shaw', 'David Seymour', 'Jamie Arbuckle', 'Erica Stanford']
 
 def get_articles():
@@ -47,22 +48,44 @@ def pageCheck(link, title, description):
         if politician in content:
             if PRINTER == 1:
                 output_print('content', title, link, description, politician)
+            output_files('content', title, link, description, politician)
             pass
         elif politician in title:
             if PRINTER == 1:
                 output_print('heading', title, link, description, politician)
+            output_files('heading', title, link, description, politician)
             pass
         elif politician in description:
             if PRINTER == 1:
                 output_print('blurb', title, link, description, politician)
+            output_files('blurb', title, link, description, politician)
             pass
     page.close()
     if PRINTER == 1:
         print('Page closed "{}", ({})'.format(title, link))
         print('\n\n')
 
-def output_files():
-    pass
+def fileCreate():
+    if PRINTER == 1:
+        print('Starting file creation')
+        create_time = datetime.now()
+    filename = str(datetime.now())
+    filename = filename.replace(" ", "_")
+    filename = filename.replace(":", "_")
+    filename = filename[:19]
+    global PATH 
+    PATH = os.getcwd()
+    PATH = os.path.join(PATH, 'scrape-results', filename + '-RNZ_SCRAPE.txt')
+    write_to = open(PATH, 'w+')
+    write_to.write("POLITICIAN, LOCATION, TITLE, LINK, DESCRIPTION")
+    write_to.close()
+    if PRINTER == 1:
+        print('File "{}" successfully created (took {})'.format(PATH, datetime.now() - create_time))
+
+def output_files(location, title, link, description, politician):
+    write_to = open(PATH, 'a')
+    write_to.write("\n{},{},{},{},{}".format(politician.lower(), location, title, link, description))
+    write_to.close()
 
 def output_print(location, title, link, description, politician):
     """Prints the output to the console. Used for testing and debugging."""
@@ -73,5 +96,6 @@ def output_print(location, title, link, description, politician):
     print('---\n')
 
 startTime = datetime.now()
+fileCreate()
 get_articles()
 print("File rnz-scrape.py finished in", datetime.now() - startTime)
