@@ -5,9 +5,15 @@ Each item contains a link to a full article, this link is then checked against t
 Finally, articles that mention a tracked politician are saved with a blurb to the outputs folder.
 """
 
+# SETTINGS
+
+PRINTER = 0 # CHANGE TO 1 TO PRINT LOGS TO CONSOLE
+
 # Importing the necessary libraries
-from urllib.request import urlopen
+import urllib.request
 import xmltodict
+from datetime import datetime
+
 
 
 # List of politicians to track
@@ -15,7 +21,7 @@ politicians = ['Jacinda Ardern', 'Judith Collins', 'Winston Peters', 'James Shaw
 
 def get_articles():
     # Open the XML file from the RNZ website
-    response = urlopen('https://www.rnz.co.nz/rss/political.xml')
+    response = urllib.request.urlopen('https://www.rnz.co.nz/rss/political.xml')
     xml = response.read()
     response.close()
 
@@ -30,17 +36,42 @@ def get_articles():
         title = article['title']
         link = article['link']
         description = article['description']
-        pageCheck(link)
+        pageCheck(link, title, description)
 
-def pageCheck(url):
-    content = urlopen(url).read()
+def pageCheck(link, title, description):
+    page = urllib.request.urlopen(link)
+    if PRINTER == 1:
+        print('Page opened "{}", ({})'.format(title, link))
+    content = page.read().decode('utf-8')
     for politician in politicians:
         if politician in content:
-            print('Politician mentioned:', politician)
-            print('Title:', title)
-            print('Link:', link)
-            print('Description:', description)
-            print('---')
+            if PRINTER == 1:
+                output_print('content', title, link, description, politician)
+            pass
+        elif politician in title:
+            if PRINTER == 1:
+                output_print('heading', title, link, description, politician)
+            pass
+        elif politician in description:
+            if PRINTER == 1:
+                output_print('blurb', title, link, description, politician)
+            pass
+    page.close()
+    if PRINTER == 1:
+        print('Page closed "{}", ({})'.format(title, link))
+        print('\n\n')
 
+def output_files():
+    pass
 
+def output_print(location, title, link, description, politician):
+    """Prints the output to the console. Used for testing and debugging."""
+    print('\nPolitician mentioned ({}):'.format(location), politician)
+    print('Title:', title)
+    print('Link:', link)
+    print('Description:', description)
+    print('---\n')
+
+startTime = datetime.now()
 get_articles()
+print("File rnz-scrape.py finished in", datetime.now() - startTime)
