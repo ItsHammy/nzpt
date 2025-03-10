@@ -7,15 +7,13 @@ Finally, articles that mention a tracked politician are saved with a blurb to th
 
 # SETTINGS
 
-PRINTER = 0 # CHANGE TO 1 TO PRINT LOGS TO CONSOLE
+PRINTER = 1 # CHANGE TO 1 TO PRINT LOGS TO CONSOLE
 
 # Importing the necessary libraries
 import urllib.request
 import xmltodict
 from datetime import datetime
 import os
-
-
 
 # List of politicians to track (TEST)
 politicians = ['Jacinda Ardern', 'Judith Collins', 'Winston Peters', 'James Shaw', 'David Seymour', 'Jamie Arbuckle', 'Erica Stanford']
@@ -69,21 +67,28 @@ def fileCreate():
     if PRINTER == 1:
         print('Starting file creation')
         create_time = datetime.now()
+    
+    # Ensure the 'scrape-results' directory exists
+    results_dir = os.path.join(os.getcwd(), 'scrape-results')
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir)
+        if PRINTER == 1:
+            print('Created directory:', results_dir)
+    
     filename = str(datetime.now())
     filename = filename.replace(" ", "_")
     filename = filename.replace(":", "_")
     filename = filename[:19]
     global PATH 
-    PATH = os.getcwd()
-    PATH = os.path.join(PATH, 'scrape-results', filename + '-RNZ_SCRAPE.txt')
-    write_to = open(PATH, 'w+')
+    PATH = os.path.join(results_dir, filename + '-RNZ_SCRAPE.csv')
+    write_to = open(PATH, 'x', encoding='utf-8')  # Specify UTF-8 encoding
     write_to.write("POLITICIAN, LOCATION, TITLE, LINK, DESCRIPTION")
     write_to.close()
     if PRINTER == 1:
         print('File "{}" successfully created (took {})'.format(PATH, datetime.now() - create_time))
 
 def output_files(location, title, link, description, politician):
-    write_to = open(PATH, 'a')
+    write_to = open(PATH, 'a', encoding='utf-8')  # Specify UTF-8 encoding
     write_to.write("\n{},{},{},{},{}".format(politician.lower(), location, title, link, description))
     write_to.close()
 
