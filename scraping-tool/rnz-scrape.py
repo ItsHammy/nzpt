@@ -89,7 +89,7 @@ def fileCreate():
 
 def output_files(location, title, link, description, politician):
     write_to = open(PATH, 'a', encoding='utf-8')  # Specify UTF-8 encoding
-    write_to.write("\n{},{},{},{},{}".format(politician.lower(), location, title, link, description))
+    write_to.write("\n{},{},\"{}\",{},\"{}\"".format(politician.lower(), location, title, link, description))
     write_to.close()
 
 def output_print(location, title, link, description, politician):
