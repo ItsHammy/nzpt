@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>NZPT · NZ PolToolbox | Interactive Political Insights</title>
+  <meta name="description" content="NZPolToolbox (NZPT) transforms public New Zealand political data into interactive, visual web apps. Explore urgency metrics & financial landscapes with clarity.">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(145deg, #f8fafc 0%, #eef2f5 100%);
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+      line-height: 1.5;
+      color: #0a1e2f;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* modern glass-card aesthetic */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      flex: 1;
+    }
+
+    /* header / brand area */
+    .brand {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(2px);
+      padding: 0.5rem 1.25rem;
+      border-radius: 100px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .logo-icon {
+      font-size: 2rem;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+
+    .logo-text {
+      font-weight: 700;
+      font-size: 1.8rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #1F5E3A, #0f3b2c);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .tagline {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #2c553f;
+      background: #e9f3ef;
+      display: inline-block;
+      padding: 0.2rem 1rem;
+      border-radius: 40px;
+      margin-top: 0.75rem;
+    }
+
+    /* hero headline */
+    .hero {
+      text-align: center;
+      max-width: 820px;
+      margin: 0 auto 3rem auto;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 6vw, 3.8rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(125deg, #0A2E24, #1C6E48, #2B8C5E);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .hero .highlight {
+      background: linear-gradient(120deg, #e6f7ef, #c8e9d9);
+      padding: 0.1rem 0.3rem;
+      border-radius: 12px;
+      display: inline-block;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: #1e3a3a;
+      max-width: 700px;
+      margin: 0 auto;
+      font-weight: 450;
+    }
+
+    /* features / description block */
+    .description-card {
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(12px);
+      border-radius: 2rem;
+      padding: 2rem 2rem;
+      margin: 2rem 0 3rem 0;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.02);
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+
+    .grid-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      align-items: stretch;
+    }
+
+    .feature-item {
+      flex: 1;
+      min-width: 220px;
+      background: #ffffffcc;
+      border-radius: 1.5rem;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      transition: all 0.2s ease;
+      border: 1px solid #e2f0ea;
+      backdrop-filter: blur(4px);
+    }
+
+    .feature-emoji {
+      font-size: 2.4rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .feature-item h3 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #1a4d3a;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-item p {
+      font-size: 0.95rem;
+      color: #2c5142;
+    }
+
+    /* button panel */
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.8rem;
+      margin: 2.5rem 0 2rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 1rem 2.5rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+      border-radius: 60px;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      cursor: pointer;
+      border: none;
+      background: white;
+      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.05);
+      letter-spacing: -0.3px;
+    }
+
+    .btn-primary {
+      background: #0e2f24;
+      color: white;
+      border: 1px solid #2b6e4e;
+    }
+
+    .btn-primary:hover {
+      background: #1c543d;
+      transform: translateY(-3px);
+      box-shadow: 0 18px 28px -10px rgba(27, 86, 62, 0.4);
+    }
+
+    .btn-secondary {
+      background: #fff9f0;
+      color: #1d543e;
+      border: 1px solid #bfdfd0;
+    }
+
+    .btn-secondary:hover {
+      background: #edf7f1;
+      transform: translateY(-3px);
+      border-color: #8fc0aa;
+      box-shadow: 0 15px 25px -12px rgba(0, 0, 0, 0.12);
+    }
+
+    .btn-arrow {
+      font-size: 1.3rem;
+      transition: transform 0.2s;
+    }
+
+    .btn:hover .btn-arrow {
+      transform: translateX(4px);
+    }
+
+    /* interactive note / live preview style */
+    .info-note {
+      text-align: center;
+      background: #ffffffbb;
+      backdrop-filter: blur(8px);
+      border-radius: 2rem;
+      padding: 1rem 2rem;
+      margin-top: 3rem;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+      font-size: 0.9rem;
+      color: #1e4a3a;
+      border: 1px solid #cfe8df;
+    }
+
+    .info-note a {
+      color: #166b48;
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px dashed #88c0a8;
+    }
+
+    .info-note a:hover {
+      color: #0b402e;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem 2rem;
+      font-size: 0.8rem;
+      color: #4e6b5e;
+      border-top: 1px solid #d4e2da;
+      background: #f4f9f6;
+      margin-top: 2rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 680px) {
+      .container {
+        padding: 1.25rem 1rem 2rem;
+      }
+      .btn {
+        padding: 0.8rem 1.8rem;
+        font-size: 1rem;
+      }
+      .feature-item {
+        min-width: 160px;
+      }
+      .description-card {
+        padding: 1.5rem;
+      }
+      .hero p {
+        font-size: 1rem;
+      }
+    }
+
+    /* subtle animated accent */
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      100% { transform: translateY(-6px); }
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+      transition: 0.05s;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="brand">
+    <div class="logo">
+      <span class="logo-text">NZPolToolbox</span>
+    </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>See through the noise.<br>Public data, <span style="white-space: nowrap;">reimagined.</span></h1>
+    <p>NZPT transforms official political information into dynamic, visual tools — giving you clarity on urgency trends and financial footprints.</p>
+  </div>
+
+  <!-- Two primary call-to-action buttons: /urgency/ and /financial/ -->
+  <div class="action-buttons">
+    <a href="/urgency/" class="btn btn-primary">
+      <span>⏱️ Explore Urgency Dashboard</span>
+      <span class="btn-arrow">→</span>
+    </a>
+    <a href="/financial/" class="btn btn-secondary">
+      <span>💵 Dive into Financial Data</span>
+      <span class="btn-arrow">→</span>
+    </a>
+  </div>
+
+  <!-- additional hint to show both buttons lead to dedicated tools -->
+  <div class="info-note">
+    ⚡ NZPolToolbox (NZPT) — open-source web apps built with public NZ political datasets.<br>
+    Choose <strong>Urgency</strong> to review parliamentary motion metrics & urgency calls, or <strong>Financial</strong> to analyse party spending, donations & fiscal overview.
+  </div>
+</div>
+
+<footer>
+  <p>🇳🇿 NZPT · independent non-partisan toolbox for political transparency | data sourced from official sources & parliamentary records</p>
+  <p style="margin-top: 0.5rem;">🔗 interactive tools — <strong>/urgency/</strong> and <strong>/financial/</strong> — real-time exploration</p>
+  <a href="#" id="shielded-logo">
+        <img alt="shielded" src="https://shielded.co.nz/img/custom-logo.png" height="60" width="60"></a>
+    <script src="https://staticcdn.co.nz/embed/embed.js"></script>
+    <script>
+        (function () {
+            window.onload = function(){
+                var frameName = new ds07o6pcmkorn({
+                    openElementId: "#shielded-logo",
+                    modalID: "modal",
+                });
+                frameName.init();
+            }
+        })();
+    </script>
+</footer>
+
+<!-- simple client-side simulation to show that buttons are routing to relative paths (no external libs) -->
+<!-- This doesn't interfere with actual navigation, just to ensure any click preview intent -->
+<script>
+  (function() {
+    // optional: capture any click on buttons for developer hints in console (non-intrusive)
+    // preserve default anchor behavior — only logs for demonstration, no override.
+    const urgencyBtn = document.querySelector('a[href="/urgency/"]');
+    const financialBtn = document.querySelector('a[href="/financial/"]');
+    
+    if (urgencyBtn) {
+      urgencyBtn.addEventListener('click', function(e) {
+        // Just informative, browser proceeds to /urgency/
+        console.log('🌿 NZPT navigation: redirecting to Urgency module → /urgency/');
+      });
+    }
+    if (financialBtn) {
+      financialBtn.addEventListener('click', function(e) {
+        console.log('📊 NZPT navigation: redirecting to Financial module → /financial/');
+      });
+    }
+    
+    // additional: make info note interactive feel (not required)
+    const infoBlock = document.querySelector('.info-note');
+    if (infoBlock) {
+      infoBlock.style.cursor = 'default';
+    }
+  })();
+</script>
+</body>
+</html>
