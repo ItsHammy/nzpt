@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>NZPT · New Zealand Politics Toolbox</title>
+    <meta name="description" content="NZPolToolbox is a free, open-source, non-partisan project turning official New Zealand political data into clear interactive tools.">
+
+    <meta property="og:title" content="NZPT · New Zealand Politics Toolbox">
+    <meta property="og:description" content="Free, open-source tools for New Zealand political transparency.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nzpt.cjs.nz">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --cream:   #f7f3ec;
+            --paper:   #faf8f4;
+            --white:   #ffffff;
+            --ink:     #18120a;
+            --ink2:    #3d3025;
+            --muted:   #9c8a78;
+            --border:  #e5ddd2;
+            --orange:  #e8620a;
+            --orange2: #f5890e;
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body:    'DM Sans', sans-serif;
+            --font-mono:    'DM Mono', monospace;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--paper);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: 16px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ── Topbar ── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.2rem 3rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--paper);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .wordmark {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: var(--ink);
+            letter-spacing: -0.02em;
+            text-decoration: none;
+        }
+
+        .wordmark span { color: var(--orange); }
+
+        .topbar-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .topbar-links a {
+            font-size: 0.85rem;
+            color: var(--muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.15s;
+        }
+
+        .topbar-links a:hover { color: var(--ink); }
+
+        .gh-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--ink) !important;
+            border: 1px solid var(--border);
+            padding: 0.4rem 0.9rem;
+            border-radius: 6px;
+            transition: border-color 0.15s !important;
+        }
+
+        .gh-link:hover { border-color: var(--ink) !important; }
+
+        /* ── Hero ── */
+        .hero {
+            min-height: calc(100vh - 61px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 5rem 2rem 6rem;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 900px;
+            height: 600px;
+            background: radial-gradient(ellipse at 50% 20%, rgba(232,98,10,0.07) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: var(--orange);
+            background: rgba(232,98,10,0.07);
+            border: 1px solid rgba(232,98,10,0.18);
+            padding: 0.35rem 0.9rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            animation: fadeUp 0.5s ease 0.1s both;
+        }
+
+        .hero-kicker::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: var(--orange);
+            border-radius: 50%;
+            animation: blink 2s ease infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.3; }
+        }
+
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(3.2rem, 7vw, 6.5rem);
+            font-weight: 900;
+            line-height: 1.0;
+            letter-spacing: -0.03em;
+            color: var(--ink);
+            max-width: 820px;
+            margin-bottom: 1.5rem;
+            animation: fadeUp 0.5s ease 0.2s both;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--orange);
+        }
+
+        .hero-sub {
+            font-size: 1.15rem;
+            color: var(--ink2);
+            max-width: 500px;
+            font-weight: 300;
+            line-height: 1.7;
+            margin-bottom: 3.5rem;
+            animation: fadeUp 0.5s ease 0.3s both;
+        }
+
+        /* ── CTA buttons ── */
+        .cta-pair {
+            display: flex;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+            animation: fadeUp 0.5s ease 0.4s both;
+        }
+
+        .cta-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.25rem;
+            padding: 1.4rem 3rem 1.4rem 1.8rem;
+            border-radius: 12px;
+            text-decoration: none;
+            min-width: 240px;
+            transition: all 0.22s cubic-bezier(0.2,0.9,0.4,1.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-btn::after {
+            content: '→';
+            position: absolute;
+            right: 1.4rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+
+        .cta-btn:hover { transform: translateY(-4px); }
+        .cta-btn:hover::after { transform: translateY(-50%) translateX(5px); }
+
+        .btn-label {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.55;
+        }
+
+        .btn-title {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .btn-desc {
+            font-size: 0.78rem;
+            opacity: 0.6;
+            font-weight: 400;
+        }
+
+        .cta-primary {
+            background: var(--ink);
+            color: var(--paper);
+            border: 1px solid var(--ink);
+            box-shadow: 0 4px 20px rgba(24,18,10,0.15);
+        }
+
+        .cta-primary:hover {
+            box-shadow: 0 14px 36px rgba(24,18,10,0.22);
+        }
+
+        .cta-secondary {
+            background: var(--white);
+            color: var(--ink);
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(24,18,10,0.05);
+        }
+
+        .cta-secondary:hover {
+            border-color: var(--orange);
+            box-shadow: 0 14px 36px rgba(232,98,10,0.12);
+        }
+
+        .hero-note {
+            font-family: var(--font-mono);
+            font-size: 0.67rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            animation: fadeUp 0.5s ease 0.5s both;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.4rem;
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            animation: fadeUp 0.5s ease 0.9s both;
+            text-decoration: none;
+        }
+
+        .scroll-hint::after {
+            content: '';
+            width: 1px;
+            height: 36px;
+            background: linear-gradient(to bottom, var(--border), transparent);
+            animation: scrollDrop 1.8s ease infinite;
+        }
+
+        @keyframes scrollDrop {
+            0%   { transform: scaleY(0); transform-origin: top; opacity: 1; }
+            50%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
+            51%  { transform: scaleY(1); transform-origin: bottom; }
+            100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
+        }
+
+        /* ── Shared section styles ── */
+        .section-border { border-top: 1px solid var(--border); }
+
+        /* ── OSS section ── */
+        .oss-section {
+            background: var(--ink);
+            color: var(--paper);
+            border-top: none;
+        }
+
+        .oss-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 6rem 3rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: center;
+        }
+
+        .section-tag {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--orange2);
+            display: block;
+            margin-bottom: 1.2rem;
+        }
+
+        .oss-inner h2 {
+            font-family: var(--font-display);
+            font-size: 2.6rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            line-height: 1.05;
+            color: var(--paper);
+            margin-bottom: 1.2rem;
+        }
+
+        .oss-inner h2 em { font-style: italic; color: var(--orange2); }
+
+        .oss-inner > div > p {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.8;
+            font-weight: 300;
+            margin-bottom: 2rem;
+        }
+
+        .oss-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--paper);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .oss-btn:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        .oss-points {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .oss-point {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            padding: 1.2rem 1.4rem;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px;
+        }
+
+        .oss-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 0.1rem; }
+
+        .oss-point h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--paper);
+            margin-bottom: 0.2rem;
+        }
+
+        .oss-point p {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.38);
+            line-height: 1.5;
+        }
+
+        /* ── Mission section ── */
+        .mission-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 6rem 3rem;
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 5rem;
+            align-items: start;
+        }
+
+        .mission-aside {
+            position: sticky;
+            top: 100px;
+        }
+
+        .mission-aside .tag {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .mission-aside h2 {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            color: var(--ink);
+        }
+
+        .mission-aside h2 em { font-style: italic; color: var(--orange); }
+
+        .mission-body {
+            display: flex;
+            flex-direction: column;
+            gap: 1.8rem;
+            padding-top: 0.4rem;
+        }
+
+        .mission-body p {
+            font-size: 1.05rem;
+            color: var(--ink2);
+            line-height: 1.85;
+            font-weight: 300;
+        }
+
+        .mission-body strong { font-weight: 600; color: var(--ink); }
+
+        .mission-body a {
+            color: var(--orange);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(232,98,10,0.3);
+            transition: border-color 0.15s;
+        }
+
+        .mission-body a:hover { border-color: var(--orange); }
+
+        /* ── Sources section ── */
+        .sources-section {
+            background: var(--cream);
+            border-top: 1px solid var(--border);
+        }
+
+        .sources-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 5rem 3rem;
+        }
+
+        .sources-inner .tag {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .sources-inner h2 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+            margin-bottom: 2.5rem;
+        }
+
+        .sources-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .source-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            transition: all 0.15s;
+        }
+
+        .source-card:hover {
+            border-color: var(--orange);
+            box-shadow: 0 4px 16px rgba(232,98,10,0.08);
+        }
+
+        .source-name { font-size: 0.95rem; font-weight: 600; color: var(--ink); }
+        .source-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+
+        .source-link {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--orange);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-top: 0.5rem;
+        }
+
+        /* ── Footer ── */
+        .site-footer {
+            border-top: 1px solid var(--border);
+            padding: 2.5rem 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .footer-wordmark {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .footer-wordmark span { color: var(--orange); }
+
+        .footer-copy {
+            font-family: var(--font-mono);
+            font-size: 0.64rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-top: 0.25rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.8rem;
+        }
+
+        .footer-links a {
+            font-size: 0.82rem;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .footer-links a:hover { color: var(--ink); }
+
+        /* ── Animations ── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 860px) {
+            .topbar { padding: 1rem 1.5rem; }
+            .topbar-links a:not(.gh-link) { display: none; }
+            .hero { padding: 4rem 1.5rem 6rem; }
+            .cta-pair { gap: 0.8rem; }
+            .oss-inner { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 1.5rem; }
+            .mission-inner { grid-template-columns: 1fr; gap: 2rem; padding: 4rem 1.5rem; }
+            .mission-aside { position: static; }
+            .sources-inner { padding: 4rem 1.5rem; }
+            .sources-grid { grid-template-columns: 1fr; }
+            .site-footer { padding: 2rem 1.5rem; flex-direction: column; align-items: flex-start; }
+        }
+
+        @media (max-width: 540px) {
+            .hero h1 { font-size: 2.8rem; }
+            .cta-btn { min-width: 100%; }
+            .cta-pair { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="topbar">
+    <a href="/" class="wordmark">NZ<span>Pol</span>Toolbox</a>
+    <div class="topbar-links">
+        <a href="/urgency/">Urgency Tracker</a>
+        <a href="/finances/">Election Donations</a>
+        <a href="https://cjs.nz/socials" target="_blank">Contact</a>
+        <a href="https://github.com/ItsHammy" target="_blank" class="gh-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            GitHub
+        </a>
+    </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-kicker">Free · Open Source · Non-partisan</div>
+
+    <h1>NZ politics,<br><em>without the noise.</em></h1>
+
+    <p class="hero-sub">
+        NZPT turns official New Zealand political data into clear, interactive tools. Built in the open, funded by nobody, accountable to everyone.
+    </p>
+
+    <div class="cta-pair">
+        <a href="/urgency/" class="cta-btn cta-primary">
+            <span class="btn-label">Urgency Stats, Bill Viewer</span>
+            <span class="btn-title">Urgency Tracker</span>
+            <span class="btn-desc">Parliamentary urgency since Dec 2023</span>
+        </a>
+        <a href="/finances/" class="cta-btn cta-secondary">
+            <span class="btn-label">Party Donations, made transparent.</span>
+            <span class="btn-title">Financial Dashboard</span>
+            <span class="btn-desc">Party donations over $20,000 · 2026</span>
+        </a>
+    </div>
+
+    <div class="hero-note">Data sourced directly from official NZ government records</div>
+
+    <a href="#about" class="scroll-hint">Learn more</a>
+</section>
+
+<!-- Open Source -->
+<section class="oss-section" id="about">
+    <div class="oss-inner">
+        <div>
+            <span class="section-tag">Open source & independent</span>
+            <h2>Built in the open.<br><em>Owned by no one.</em></h2>
+            <p>Every line of NZPT is publicly available. No hidden funding, no political affiliations, no advertising. Just code and public data.</p>
+            <a href="https://github.com/ItsHammy" target="_blank" class="oss-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                View source on GitHub
+            </a>
+        </div>
+        <div class="oss-points">
+            <div class="oss-point">
+                <div class="oss-icon">🔓</div>
+                <div>
+                    <h4>Fully open source</h4>
+                    <p>All scraper scripts, frontend code, and data pipelines are public on GitHub. Fork it, audit it, improve it.</p>
+                </div>
+            </div>
+            <div class="oss-point">
+                <div class="oss-icon">🚫</div>
+                <div>
+                    <h4>No funding, no agenda</h4>
+                    <p>NZPT is not funded by any party, lobby group, or organisation. No commercial interest in any political outcome.</p>
+                </div>
+            </div>
+            <div class="oss-point">
+                <div class="oss-icon">📡</div>
+                <div>
+                    <h4>Official data only</h4>
+                    <p>Every figure comes directly from Electoral Commission and parliamentary records — never from media reports or secondary sources.</p>
+                </div>
+            </div>
+            <div class="oss-point">
+                <div class="oss-icon">🇳🇿</div>
+                <div>
+                    <h4>Built by a New Zealander</h4>
+                    <p>A personal side project, built out of a belief that public data should be accessible to the public.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission -->
+<section class="section-border">
+    <div class="mission-inner">
+        <div class="mission-aside">
+            <span class="tag">About</span>
+            <h2>Why does<br><em>this exist?</em></h2>
+        </div>
+        <div class="mission-body">
+            <p>
+                New Zealand's political data is <strong>technically public</strong> — but it lives in dense tables, PDF filings, and hard-to-navigate government websites. Most people don't have the time or tools to dig through it.
+            </p>
+            <p>
+                NZPT exists to close that gap. The goal isn't to tell you what to think about the data — it's to make sure you can actually <strong>see it clearly</strong> in the first place.
+            </p>
+            <p>
+                Right now there are two tools: an <a href="/urgency/">urgency tracker</a> that records every sitting day the current government has invoked urgency, and a <a href="/financial/">financial dashboard</a> that tracks donations over $20,000 to registered parties during the 2026 election year. More tools are planned.
+            </p>
+            <p>
+                If you have ideas for what should be built next — or want to contribute — <a href="https://cjs.nz/socials" target="_blank">get in touch</a> or open a pull request on GitHub.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Data sources -->
+<section class="sources-section">
+    <div class="sources-inner">
+        <span class="tag">Data sources</span>
+        <h2>Where the data comes from</h2>
+        <div class="sources-grid">
+            <a href="https://elections.nz" target="_blank" class="source-card">
+                <div class="source-name">Electoral Commission NZ</div>
+                <div class="source-desc">Party donation returns, financial disclosures, and registered party information.</div>
+                <div class="source-link">elections.nz →</div>
+            </a>
+            <a href="https://parliament.nz" target="_blank" class="source-card">
+                <div class="source-name">New Zealand Parliament</div>
+                <div class="source-desc">Daily progress in the House, urgency motions, and Hansard records.</div>
+                <div class="source-link">parliament.nz →</div>
+            </a>
+            <div class="source-card" style="cursor:default; opacity:0.55">
+                <div class="source-name">More sources soon</div>
+                <div class="source-desc">Additional official datasets will be added as new tools are built.</div>
+                <div class="source-link">In development</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="site-footer">
+    <div>
+        <div class="footer-wordmark">NZ<span>Pol</span>Toolbox</div>
+        <div class="footer-copy">Independent · Non-partisan · Open source · New Zealand</div>
+    </div>
+    <div class="footer-links">
+        <a href="/urgency/">Urgency Tracker</a>
+        <a href="/financial/">Financial Dashboard</a>
+        <a href="https://github.com/ItsHammy" target="_blank">GitHub</a>
+        <a href="https://cjs.nz/socials" target="_blank">Contact</a>
+    </div>
+    <a href="#" id="shielded-logo">
+        <img alt="Site protected by Shielded" src="https://shielded.co.nz/img/custom-logo.png" height="48" width="48">
+    </a>
+</footer>
+
+<script src="https://staticcdn.co.nz/embed/embed.js"></script>
+<script>
+    window.onload = function () {
+        var frameName = new ds07o6pcmkorn({
+            openElementId: "#shielded-logo",
+            modalID: "modal",
+        });
+        frameName.init();
+    };
+</script>
+
+</body>
+</html>
